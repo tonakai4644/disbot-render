@@ -22,8 +22,9 @@ intents.message_content = True
 
 client = MyClient(intents=intents)
 keep_alive()
+
 try:
-    token = os.getenv("DISCORD_TOKEN")
-    bot.run(token)
+    token = os.getenv("DISCORD_TOKEN")  # 環境変数名はRenderの設定に合わせて
+    client.run(token)  # ✅ 修正：client を使う
 except Exception as e:
     print(f"Bot実行中にエラーが発生しました: {e}")
