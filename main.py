@@ -16,10 +16,15 @@ class MyClient(discord.Client):
             await message.channel.send('Hello!')
 
     async def on_member_join(self, member):
-        # 固定チャンネルにメッセージを送る
         channel = self.get_channel(938403730863316992)
         if channel:
             await channel.send(f'{member.mention} さんがCROSSに参加しました！')
+
+    async def on_member_remove(self, member):
+        channel = self.get_channel(938403730863316992)
+        if channel:
+            await channel.send(f'{member.mention} さんがCROSSを去りました。')
+
 
 # intents設定
 intents = discord.Intents.default()
