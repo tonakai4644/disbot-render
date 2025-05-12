@@ -1,4 +1,3 @@
-# valorant.py (cogs/valorant.py)
 import discord
 from discord.ext import commands
 import random
@@ -9,8 +8,9 @@ class RoleView(discord.ui.View):
     def __init__(self):
         super().__init__()
         self.names = []
-        # 名前を表示するラベルを追加
-        self.name_label = discord.ui.Label(label="現在の名前リスト：\nなし", style=discord.ButtonStyle.secondary)
+        # 代わりにボタンを使って名前リストを表示
+        self.name_button = discord.ui.Button(label="現在の名前リスト：\nなし", style=discord.ButtonStyle.secondary, disabled=True)
+        self.add_item(self.name_button)
 
     @discord.ui.button(label="名前を追加", style=discord.ButtonStyle.primary)
     async def add_name(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -32,11 +32,11 @@ class RoleView(discord.ui.View):
         await interaction.response.send_message(f"```{result}```")
 
     # 名前が追加された後にUIを更新するメソッド
-    async def update_name_label(self):
+    async def update_name_button(self):
         if not self.names:
-            self.name_label.label = "現在の名前リスト：\nなし"
+            self.name_button.label = "現在の名前リスト：\nなし"
         else:
-            self.name_label.label = "現在の名前リスト：\n" + "\n".join(self.names)
+            self.name_button.label = "現在の名前リスト：\n" + "\n".join(self.names)
         self.stop()  # UIを更新するためにビューを更新
 
 class NameModal(discord.ui.Modal, title="名前を入力"):
@@ -50,7 +50,7 @@ class NameModal(discord.ui.Modal, title="名前を入力"):
         self.view.names.append(self.name.value)
         await interaction.response.send_message(f"{self.name.value} を追加しました！", ephemeral=True)
         # 名前を追加後にラベルを更新
-        await self.view.update_name_label()
+        await self.view.update_name_button()
 
 class Valorant(commands.Cog):
     def __init__(self, bot):
