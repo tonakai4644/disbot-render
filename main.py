@@ -40,10 +40,8 @@ async def on_member_remove(member):
 # `$Hello` コマンド
 @bot.command()
 async def Hello(ctx):
-    import socket
-    hostname = socket.gethostname()
-    await ctx.send(f"Hello from {hostname}!")
-    logger.info(f"{ctx.author} が $Hello を使用しました（{hostname}）")
+    await ctx.send("Hello!")
+    logger.info(f"{ctx.author} が $Hello を使用しました。")
 
 
 
