@@ -40,8 +40,12 @@ async def on_member_remove(member):
 # `$Hello` コマンド
 @bot.command()
 async def Hello(ctx):
-    await ctx.send("Hello!")
-    logger.info(f"{ctx.author} が $Hello を使用しました。")
+    import socket
+    hostname = socket.gethostname()
+    await ctx.send(f"Hello from {hostname}!")
+    logger.info(f"{ctx.author} が $Hello を使用しました（{hostname}）")
+
+
 
 # サーバー起動（keep_alive関数を実行してからBotを起動）
 keep_alive()
