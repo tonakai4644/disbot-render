@@ -33,9 +33,14 @@ async def on_member_remove(member):
 # コグを読み込む
 @bot.event
 async def setup_hook():
-    await bot.load_extension("cogs.basic")
-    await bot.load_extension("cogs.valorant")
-    await bot.load_extension("cogs.rpg")
+    for filename in os.listdir("./cogs"):
+        if filename.endswith(".py"):
+            ext = f"cogs.{filename[:-3]}"
+            try:
+                await bot.load_extension(ext)
+                logger.info(f"拡張を読み込みました: {ext}")
+            except Exception as e:
+                logger.warning(f"拡張 {ext} の読み込みに失敗: {e}")
 
 # keep_alive を使ってRender維持
 keep_alive()
