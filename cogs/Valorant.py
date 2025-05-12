@@ -59,8 +59,13 @@ class Valorant(commands.Cog):
     async def vrole(self, ctx, *initial_names):  
         """名前リストに引数を追加し、UIを表示"""  
         view = RoleView()  
-        # 初期引数をリストに追加  
+        # 引数をリストに追加  
         view.names.extend(initial_names)  
+        # 初期状態のUIのラベルも更新  
+        # 例：初期の未登録状態も反映  
+        # これにより名前反映とUI更新も一緒に行われる  
+        # このタイミングでUIとリストが一致  
+        await view.update_name_button(None)  # `interaction`の代わりにNoneを渡したい場合は`None`でも良い  
         msg = await ctx.send("名前を入力して、ロールを割り当てる", view=view)  
         view.message = msg  
 
