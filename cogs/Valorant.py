@@ -8,8 +8,7 @@ class RoleView(discord.ui.View):
     def __init__(self):  
         super().__init__()  
         self.names = []  
-        self.message = None  # メッセージオブジェクトを保存する  
-        # 最初にボタンを作成  
+        self.message = None  
         self.name_button = discord.ui.Button(label="現在の名前リスト：\nなし", style=discord.ButtonStyle.secondary, disabled=True)  
         self.add_item(self.name_button)  
 
@@ -32,13 +31,11 @@ class RoleView(discord.ui.View):
 
         await interaction.response.send_message(f"```{result}```")  
 
-    # 名前が追加された後にUIを更新  
     async def update_name_button(self, interaction: discord.Interaction):  
         if not self.names:  
             self.name_button.label = "現在の名前リスト：\nなし"  
         else:  
             self.name_button.label = "現在の名前リスト：\n" + "\n".join(self.names)  
-        # 既存のメッセージを編集  
         if self.message:  
             await self.message.edit(view=self)  
 
@@ -52,7 +49,6 @@ class NameModal(discord.ui.Modal, title="名前を入力"):
     async def on_submit(self, interaction: discord.Interaction):  
         self.view.names.append(self.name.value)  
         await interaction.response.send_message(f"{self.name.value} を追加しました！", ephemeral=True)  
-        # UIのラベル更新とメッセージ編集  
         await self.view.update_name_button(interaction)  
 
 class Valorant(commands.Cog):  
@@ -60,11 +56,12 @@ class Valorant(commands.Cog):
         self.bot = bot  
 
     @commands.command(name="vrole")  
-    async def vrole(self, ctx):  
-        """UIで名前を入力してロールをランダムに割り当てる"""  
+    async def vrole(self, ctx, *initial_names):  
+        """名前リストに引数を追加し、UIを表示"""  
         view = RoleView()  
+        # 初期引数をリストに追加  
+        view.names.extend(initial_names)  
         msg = await ctx.send("名前を入力して、ロールを割り当てる", view=view)  
-        # メッセージインスタンスをviewに保存  
         view.message = msg  
 
 async def setup(bot):  
