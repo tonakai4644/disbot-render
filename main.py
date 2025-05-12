@@ -1,41 +1,55 @@
 import discord
+from discord.ext import commands
 import os
+import logging
 from keep import keep_alive
 
-class MyClient(discord.Client):
+# ロギング設定
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-    async def on_ready(self):
-        print(f'ログインしました: {self.user}')
-
-    async def on_message(self, message):
-        print(f'送信: {message.author}: {message.content}')
-        if message.author == self.user:
-            return
-
-        if message.content == '$Hello':
-            await message.channel.send('Hello!')
-
-    async def on_member_join(self, member):
-        channel = self.get_channel(938403730863316992)
-        if channel:
-            await channel.send(f'{member.mention} さんがCROSSに参加しました！')
-
-    async def on_member_remove(self, member):
-        channel = self.get_channel(938403730863316992)
-        if channel:
-            await channel.send(f'{member.mention} さんがCROSSを去りました。')
-
-
-# intents設定
+# インテント設定
 intents = discord.Intents.default()
 intents.message_content = True
-intents.members = True  # メンバー参加検出に必要
+intents.members = True  # 参加/退出イベントに必要
 
-client = MyClient(intents=intents)
+# Botインスタンス作成（コマンドプレフィックスを $ に設定）
+bot = commands.Bot(command_prefix="$", intents=intents)
+
+# Bot起動時イベント
+@bot.event
+async def on_ready():
+    logger.info(f"ログインしました: {bot.user}")
+
+# メンバー参加イベント
+@bot.event
+async def on_member_join(member):
+    channel = bot.get_channel(938403730863316992)
+    if channel:
+        await channel.send(f"{member.mention} さんがCROSSに参加しました！")
+        logger.info(f"{member} が参加しました。")
+
+# メンバー退出イベント
+@bot.event
+async def on_member_remove(member):
+    channel = bot.get_channel(938403730863316992)
+    if channel:
+        await channel.send(f"{member.mention} さんがCROSSを去りました。")
+        logger.info(f"{member} が退出しました。")
+
+# `$Hello` コマンド
+@bot.command()
+async def Hello(ctx):
+    await ctx.send("Hello!")
+    logger.info(f"{ctx.author} が $Hello を使用しました。")
+
+# サーバー起動（keep_alive関数を実行してからBotを起動）
 keep_alive()
 
 try:
     token = os.getenv("TOKEN")
-    client.run(token)
+    if not token:
+        raise ValueError("TOKENが環境変数に設定されていません。")
+    bot.run(token)
 except Exception as e:
-    print(f"Bot実行中にエラーが発生しました: {e}")
+    logger.exception(f"Bot実行中にエラーが発生しました: {e}")
